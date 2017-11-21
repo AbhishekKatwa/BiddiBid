@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add To Store</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+
+	<script type="text/javascript">
+	username=localStorage.getItem("username");
+	//alert(username);
+	setTimeout(init,1000);
+		function init(){
+			//alert("x");
+			document.getElementById("userName").innerHTML=username;
+		}
+		function calc(){
+			date=document.getElementById("date").value;
+			d1=new Date(date);
+			d1=d1.getTime();
+		}
+		function create(){
+			//alert(image);
+			image1=document.getElementById("myform").value;
+			image=image1.split("\\");
+			image=image[image.length-1];
+			//alert(image);
+		prodname=document.getElementById("prodname").value;
+		initialbid=document.getElementById("initialbid").value;
+		prodCat=document.getElementById("productCat").value;
+		//image="img1.jpg";
+		xhr=new XMLHttpRequest();
+		xhr.onreadystatechange=success;
+		xhr.open("GET","AddtoJson.php?method=POST&username="+username+"&prodname="+prodname+"&initialbid="+initialbid+"&Expires="+d1+"&prodCat="+prodCat+"&imgname="+image,true);
+		xhr.send();
+		//alert("hello");
+		
+	}
+		function success(){
+			if(xhr.readyState==4 && xhr.status==200){
+				console.log("hello");
+				console.log(xhr.responseText);
+				//document.getElementById("myform").value=image1;
+				//alert(image1);
+				setTimeout(imgUpload,2000);
+			}
+		}
+		function imgUpload(){
+			ixhr=new XMLHttpRequest();
+			ixhr.onreadystatechange=suc1;
+			var ipfile=document.getElementById("myform");
+			var myform=ipfile.files[0];
+			form = new FormData();
+			form.append("myform",myform);
+			ixhr.open("POST","AddtoJson1.php",true);
+			ixhr.send(form);
+		}
+		function suc1(){
+			if(ixhr.readyState==3 && ixhr.status==200){
+				alert(ixhr.responseText);
+			}
+		}
+		function home()
+			{
+				localStorage.setItem("username",username);
+				window.location="first.html";
+			}
+	</script>
+
+</head>
+<body>
+<div class="page-header">
+		<div class="jumbotron container" style="background-color:lightblue;">
+			<div class="col-sm-1">
+				<br/><br/><br/>
+				<b><i><span id="ur"> </span></i></b>
+				<button type="button" class="btn btn-md" disabled="disabled"> 
+  							<span class="glyphicon glyphicon-default"></span> Welcome <span id="userName"></span>
+						</button>
+			</div>
+			<div class="col-sm-9">
+				<div class="">
+					<center style="font-size:25px;font-family:fantasy;font-weight:900"><b>BIDDY BID</b></center><br/>
+					<!-- <small>This is online bidding website</small> -->
+				</div>
+			</div>
+			<div class="col-sm-1">
+				<br/><br/>
+				<button type="button" class="btn btn-success btn-md" onclick="home()"> 
+  							<span class="glyphicon glyphicon-primary"></span> GO TO HOME
+						</button>
+			</div>
+		</div>
+</div>
+	<form class="form-horizontal" role="form">
+			<form id="inner" enctype="application/json">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Name Of the Product</label>
+					<div class="col-sm-10">
+						<input type="text" id="prodname" name="prodname" value="Mobile" class="form-control" placeholder="Enter the name of the Product Item">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Initial Bid Amount</label>
+					<div class="col-sm-10">
+						<input type="text" id="initialbid" name="initialbid" value="10000" class="form-control" placeholder="Enter the initial cost for the Item">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Last Date</label>
+					<div class="col-sm-10">
+						<input type="date" id="date" class="form-control" vlaue="07-04-2017" name="date" placeholder="Enter the Last Date for Bidding for the Item" onblur="calc()">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Product Category</label>
+					<div class="col-sm-10">
+						<input type="text" id="productCat" class="form-control" value=""name="date" placeholder="EnterType of the product">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Description</label>
+					<div class="col-sm-10 section">
+						<textarea class="form-control" name="Description" rows="3"></textarea>
+					</div>
+				</div>
+				<div>
+					<div class="col-sm-4"></div>
+					<div class="col-sm-8">
+						<!-- <input type="button" class="btn btn-primary btn-lg" value="Verify" onclick=""> -->
+					</div>
+				</div>
+			</form>
+			<hr><br/><br/>
+			<form >
+			<div class="form-group">
+					<div class="col-sm-1">
+						
+					</div>
+					<div class="col-sm-2">
+							<input type="file" name="" id="myform">
+					</div>
+					<label class="col-sm-2">Choose Files To Upload Images</label>
+					<hr>
+					
+					<div class="col-sm-7"></div>
+			</div>
+			</form>
+			<div>
+						<button onclick="create()" class="btn btn-lg btn-danger">UPLOAD</button>
+			</div>
+			<br/>
+				<br/>
+		<div class="progress progress-stripped active">
+			<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 10%;">
+			<span class="sr-only">10% Complete</span> 
+			</div>
+		</div>
+	</form>
+</body>
+</html>

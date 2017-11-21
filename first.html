@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Biddy Bidd</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="bootstrap.min.js"></script>
+	<!-- <script type="text/javascript" src="suggest.js"></script> -->
+	<link rel="stylesheet" type="text/css" href="suggest.css">
+	<style type="text/css">
+		/*input[type=text]{
+			width:130px;
+			box-sizing: border-box;
+			border:2px solid #ccc;
+			border-radius:4px;
+			font-size: 16px;
+			background-color: white;
+			background-image: url('searchicon.png');
+			background-position: 10px 10px;
+			background-repeat: no-repeat;
+			padding:12px 20px 20px 12px 40px;
+			-webkit-transition:width 0.4s ease-in-out;
+			transition: width 0.4s ease-in-out;
+
+		}
+		input[type=text]:focus{
+			width=100%;
+		}*/
+		.searchbox{
+    position:relative;
+    min-width:50px;
+    width:0%;
+    height:50px;
+    float:right;
+    overflow:hidden;
+    
+    -webkit-transition: width 0.3s;
+    -moz-transition: width 0.3s;
+    -ms-transition: width 0.3s;
+    -o-transition: width 0.3s;
+    transition: width 0.3s;
+}
+
+.searchbox-input{
+    top:0;
+    right:0;
+    border:0;
+    outline:0;
+    background:#dcddd8;
+    width:100%;
+    height:50px;
+    margin:0;
+    padding:0px 55px 0px 20px;
+    font-size:20px;
+    color:red;
+}
+.searchbox-input::-webkit-input-placeholder {
+    color: #d74b4b;
+}
+.searchbox-input:-moz-placeholder {
+    color: #d74b4b;
+}
+.searchbox-input::-moz-placeholder {
+    color: #d74b4b;
+}
+.searchbox-input:-ms-input-placeholder {
+    color: #d74b4b;
+}
+
+.searchbox-icon,
+.searchbox-submit{
+    width:50px;
+    height:50px;
+    display:block;
+    position:absolute;
+    top:0;
+    font-family:verdana;
+    font-size:22px;
+    right:0;
+    padding:0;
+    margin:0;
+    border:0;
+    outline:0;
+    line-height:50px;
+    text-align:center;
+    cursor:pointer;
+    color:#dcddd8;
+    background:#172b3c;
+}
+
+.searchbox-open{
+    width:100%;
+}
+	</style>
+
+
+	<script type="text/javascript">
+		username=localStorage.getItem("username");
+		arr=[];
+		
+
+		$(document).ready(function(){
+            var submitIcon = $('.searchbox-icon');
+            var inputBox = $('.searchbox-input');
+            var searchBox = $('.searchbox');
+            var isOpen = false;
+            submitIcon.click(function(){
+                if(isOpen == false){
+                    searchBox.addClass('searchbox-open');
+                    inputBox.focus();
+                    isOpen = true;
+                } else {
+                    searchBox.removeClass('searchbox-open');
+                    inputBox.focusout();
+                    isOpen = false;
+                }
+            });  
+             submitIcon.mouseup(function(){
+                    return false;
+                });
+            searchBox.mouseup(function(){
+                    return false;
+                });
+            $(document).mouseup(function(){
+                    if(isOpen == true){
+                        $('.searchbox-icon').css('display','block');
+                        submitIcon.click();
+                    }
+                });
+        });
+            function buttonUp(){
+                //var inputVal = $('.searchbox-input').val();
+                var inputVal=document.getElementById("prodS").value;
+                inputVal = $.trim(inputVal);
+                if( inputVal !== 0){
+                   // $('.searchbox-icon').css('display','none');
+                   //alert(inputVal);
+                    obj1.getMovies();
+                } else {
+                    //$('.searchbox-input').val('');
+                   // $('.searchbox-icon').css('display','block');
+                }
+            }
+
+
+		//Take all the products from details.json
+		//products offered by other users only
+		obj={
+			xhr:null,
+			call:function(){
+				var upt=document.getElementById("userName");
+		upt.innerHTML=username;
+
+			x=document.getElementById("prod");
+			x.innerHTML="";
+			obj.xhr=new XMLHttpRequest();
+			obj.xhr.onreadystatechange=obj.Populate;
+			obj.xhr.open("GET","GetProducts.php?username="+username,true);//it will in turn call the details.json
+			obj.xhr.send();
+			init();
+			},
+			Populate:function(){
+
+				if(obj.xhr.readyState==4 && obj.xhr.status==200){
+					arr=[];
+					data=obj.xhr.responseText;
+					//console.log(data);
+					if(data!=null)
+						data=data.split(";");
+					//console.log(data.length);
+					dh=(data.length-1)/3;
+					//console.log(dh);
+					count=0;	
+					for(i=0;i<dh;i++)
+					{
+						//console.log(count);
+						j=i*3;
+						d2=new Date();
+						datediff=d2.getTime();
+						temp=parseInt(data[j+1])-parseInt(datediff);//expires[1]
+						temp=Math.floor(temp/1000);
+						temp-=1000;
+						console.log(temp);
+						if(temp>20)
+						{
+								
+							if(count%3==0)
+							{
+								var dv=document.createElement("div");
+								dv.className="col-sm-2";
+								x.appendChild(dv);
+							}
+							count++;
+							var dv=document.createElement("div");
+							dv.id="dv"+arr.length+1;
+							var a=document.createElement("a");
+							a.href="#";
+							dv.className="col-sm-3";
+							xp=data[j+2];
+							a.title=xp;//product name[2]
+							var img=document.createElement("img");
+							img.id=xp;
+							img.height="300";
+							img.width="250";
+							arr.push(xp);
+
+							img.src="."+"/images/"+data[j];//image name[0]
+							img.onclick=fun;
+							var b=document.createElement("button");
+							b.className="btn btn-success";
+							b.style.width="80%";
+							var l1=document.createElement("label");
+							var l2=document.createElement("label");
+							var l3=document.createElement("label");
+							var l4=document.createElement("label");
+							l4.id="d"+count;
+							l1.id="hr"+count;
+							l2.id="min"+count;
+							l3.id="sec"+count;
+							//console.log(count);
+							
+							l4.innerHTML=parseInt(temp/86400);
+							temp=temp%86400;
+							l1.innerHTML=parseInt(temp/(3600));
+							temp=temp%(3600);
+							l2.innerHTML=parseInt(temp/(60));
+							temp=temp%60;
+							l3.innerHTML=parseInt(temp);
+							b.appendChild(l4);
+							b.appendChild(document.createTextNode(" d:"));
+							b.appendChild(l1);
+							b.appendChild(document.createTextNode(" h:"));
+							b.appendChild(l2);
+							b.appendChild(document.createTextNode(" m:"));
+							b.appendChild(l3);
+							b.appendChild(document.createTextNode(" s:"));
+							a.appendChild(img);
+							dv.appendChild(a);
+							dv.appendChild(b);
+							x.appendChild(dv);
+							//alert(arr[i]);
+							if((count)%3==0)
+							{
+								var dv=document.createElement("div");
+								dv.className="col-sm-1";
+								x.appendChild(dv);
+								l=document.createElement("div");
+								l.className="col-sm-12";
+								l.appendChild(document.createElement("br"));
+								x.appendChild(l);
+								
+							}
+							
+						}
+
+					}
+					monitor();
+				}
+			}
+		};
+		setTimeout(Int,1000);
+		function Int(){
+			setInterval(Interval,1000);
+		}
+		//when we click an image it will inturn take the img src and then call getDetails();
+		function fun(event){
+			temp=event.target.src.split("/");
+			temp=temp[temp.length-1];//imageName
+			
+			prodname=event.target.id;//ProductName
+			//alert(prodname);
+			GoToProd(temp,prodname);
+		}
+		function GoToProd(temp,prodname){
+				localStorage.removeItem("imgname");
+				localStorage.setItem("imgname",temp)
+				localStorage.removeItem("prodname");
+				localStorage.setItem("prodname",prodname);
+				localStorage.removeItem("username");
+				localStorage.setItem("username",username);
+				window.location="productPage.html";
+		}
+		//This function decreases the time by one second.
+		function Interval()
+		{
+			console.log("hh");
+			for(var j=1;j<=count;j++)
+			{
+
+				var pt=document.getElementById("sec"+j);
+				//alert(pt.innerHTML);
+				if(parseInt(pt.innerHTML)==0){
+					pt.innerHTML=59;
+					var ptm=document.getElementById("min"+j);
+					if(parseInt(ptm.innerHTML)==0){
+						ptm.innerHTML=59;
+						var pth=document.getElementById("hr"+j);
+						if(parseInt(pth.innerHTML)==0){
+								pth.innerHTML=23;
+								var pdy=document.getElementById("d"+i);
+								if(parseInt(pdy.innerHTML)==0){
+									//Send Request to Server
+									//tell the user about his product updates.
+								}
+								else
+									pdy.innerHTML=parseInt(pdy.innerHTML)-1;
+							}
+						else
+							pth.innerHTML=parseInt(pth.innerHTML)-1;
+						}
+					else
+						ptm.innerHTML=parseInt(ptm.innerHTML)-1;
+					}
+				else
+					pt.innerHTML=parseInt(pt.innerHTML)-1;
+				}
+			}
+
+			function MyPage()
+			{
+				localStorage.setItem("username",username);
+				window.location="MyPage.html";
+			}
+			function home()
+			{
+				localStorage.setItem("username",username);
+				window.location="first.html";
+			}
+			//Open a connection SSE so that whenever there are any new products are added server will notify the client
+			
+			function monitor(){
+				ev = new EventSource("http://localhost/6thSem/BiddiBid/ServerPush.php");
+				ev.addEventListener("myevent", AddLatest, true);
+				ev.onerror = function() { alert("OOps..server closed");};
+				//alert("hello");
+			}
+			function AddLatest(event){
+				alert(event.data);
+				data=event.data.split(",");
+				user=data[0].split("=")[1];
+				prod=data[1].split("=")[1];
+				getItem(user,prod);
+			}
+			function getItem(user,prod){
+				xhrg=new XMLHttpRequest();
+				xhrg.onreadystatechange=addedNow;
+				//alert(user);
+				//alert(prod);
+				xhrg.open("GET","AddedNew_SSE.php?username="+user+"&product="+prod,true);
+				xhrg.send();
+			}
+			function addedNow(){
+				if(xhrg.readyState==4 && xhrg.status==200){
+						data=xhrg.responseText;
+						//alert(data);
+						div = document.createElement("div");
+						div.className="col-sm-4";
+						if(data!=null)
+							data=data.split(";");
+						d2=new Date();
+						datediff=d2.getTime();
+						temp=parseInt(data[1])-parseInt(datediff);//expires[1]
+						temp=Math.floor(temp/1000);
+						temp-=1000;
+						if(temp>20)
+						{
+							//alert(data[0]);
+							var img=document.createElement("img");
+							img.height="300";
+							img.width="300";
+							img.src="."+"/images/"+data[0];//image name[0]
+							img.onclick=fun;
+							var b=document.createElement("button");
+							b.className="btn btn-success";
+							b.style.width="69%";
+							var l1=document.createElement("label");
+							var l2=document.createElement("label");
+							var l3=document.createElement("label");
+							var l4=document.createElement("label");
+							l4.id="d"+i;
+							l1.id="hr"+i;
+							l2.id="min"+i;
+							l3.id="sec"+i;
+							
+							l4.innerHTML=parseInt(temp/86400);
+							temp=temp%86400;
+							l1.innerHTML=parseInt(temp/(3600));
+							temp=temp%(3600);
+							l2.innerHTML=parseInt(temp/(60));
+							temp=temp%60;
+							l3.innerHTML=parseInt(temp);
+							b.appendChild(l4);
+							b.appendChild(document.createTextNode(" d:"));
+							b.appendChild(l1);
+							b.appendChild(document.createTextNode(" h:"));
+							b.appendChild(l2);
+							b.appendChild(document.createTextNode(" m:"));
+							b.appendChild(l3);
+							b.appendChild(document.createTextNode(" s:"));
+							div.appendChild(img);
+							//div.appendChild(a);
+							div.appendChild(b);
+							Lt=document.getElementById("Latest");
+							Lt.appendChild(div);
+						}
+
+				}
+			}
+
+
+
+			function init(){
+				obj1= new Suggest();
+				obj1.movie=document.getElementById("prodS");
+				obj1.divcontainer=document.getElementById("container");
+			}
+			function Suggest(){
+				this.timer=null;
+				this.xhr1=new XMLHttpRequest();
+				//Function that decides WHEN we should go to the server,
+				//This function will be called everytime the user types
+				//a character.
+				this.getMovies=function(){
+					if(this.timer){
+						clearTimeout(this.timer);
+					}
+					this.timer=setTimeout(obj1.fetchMovies,1000);
+				};
+				this.fetchMovies=function(){
+					//alert("Going now");
+					
+					if(obj1.movie.value==""){
+						
+						obj1.divcontainer.innerHTML="";
+						obj1.divcontainer.style.display="none";
+						return;
+					}else{
+						if(localStorage[obj1.movie.value]){
+							obj1.showMovies(JSON.parse(localStorage[obj1.movie.value]));
+							
+						}else{
+							obj1.xhr1.onreadystatechange=obj1.populateMovies;
+							obj1.xhr1.open("GET","getNeeded.php?movie="+obj1.movie.value,true);
+							obj1.xhr1.send();
+							
+						}
+					}
+				};
+				this.populateMovies=function(){
+					
+					if(this.readyState==4 && this.status==200){
+						movies=JSON.parse(this.responseText);
+						//alert(movies);
+						obj1.divcontainer.innerHTML="";
+						if(movies.length==0){
+							//obj1.movie.className="notfound";
+							obj1.divcontainer.innerHTML="";
+							obj1.divcontainer.style.display="none";
+						}else{
+							
+							localStorage[obj1.movie.value]=this.responseText;
+							//obj1.movie.className="found";
+							obj1.showMovies(movies);
+						}
+					}
+				};
+				this.showMovies=function(movList){
+					obj1.divcontainer.innerHTML="";
+					
+					for(i=0;i<movList.length;i++){
+						newdiv=document.createElement("div");
+						newdiv.innerHTML=movList[i];
+						newdiv.className="suggest";
+						newdiv.onclick=obj1.setMovie;
+						obj1.divcontainer.appendChild(newdiv);
+					}
+					obj1.divcontainer.style.display="block";
+				}
+				this.setMovie=function(event){
+					obj1.movie.value=event.target.innerHTML;
+					obj1.divcontainer.innerHTML="";
+					obj1.divcontainer.style.display="none";
+				}
+				
+				//Call to go
+			}
+
+			function Contact(){
+					window.location="Contact.html";
+			}
+
+
+
+	</script>
+</head>
+<body style="background-color:skyblue" onload="obj.call()">
+
+	<div class="page-header">
+		<div class="jumbotron container" style="background-color:lightblue;">
+			<div class="col-sm-1">
+			<button type="button" class="btn btn-primary btn-md" onclick="Contact()"> 
+  							<span class="glyphicon glyphicon-default">ContactUs</span>
+						</button>
+				<br/><br/><br/>
+
+					<button type="button" class="btn btn-primary btn-md" onclick="MyPage()"> 
+  							<span class="glyphicon glyphicon-default">My Account</span>
+						</button>
+			</div>
+			<!-- <div class="col-sm-10"> -->
+				<div class="col-sm-9">
+					<center style="font-size:25px;font-family:fantasy;font-weight:900"><b>BIDDY BID</b></center><br/>
+					<small><i><b></b></i></small>
+				</div>
+				<div class="col-sm-2">
+				<button type="button" class="btn btn-success btn-md" disabled="disabled"> 
+  							<span class="glyphicon glyphicon-default"></span> Welcome <span id="userName"></span>
+						</button>
+
+					<br/><br/>
+									<button type="button" class="btn btn-info btn-md" onclick="home()" > 
+  							<span class="glyphicon glyphicon-primary"></span> GO TO HOME
+						</button>
+
+					</div>
+
+		</div>
+	</div>
+	<div class="row">
+				<!-- <div class="col-sm-8"></div>
+
+				<div class="col-sm-4">
+					<form>
+					<input type="text" id="search" name="search" placeholder="Search..">
+					</form>
+
+				</div> -->
+				<div class="container">
+					<div class="col-sm-12">
+					    <form class="searchbox">
+					        <input type="search" placeholder="Search......" name="search" id="prodS"class="searchbox-input" onkeyup="buttonUp();" required>
+					        <input type="submit" class="searchbox-submit" value="GO">
+					        <span class="searchbox-icon">GO</span>
+					        <!-- <div id="container"></div> -->
+					    </form>
+					 </div>
+					 <div class="col-sm-12">
+						    <table border="0">
+							<tr>
+								<td></td>
+								<td><div id="container"></div></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				
+	</div>
+
+	<div class="row" id="prodLatest">
+		<div class="container-fluid" >
+			<div class="col-sm-2"></div>
+			<div class="col-2m-8" id="Latest">
+					
+			</div>
+			<div class="col-sm-2"></div>
+			
+		</div>
+	</div><br/><br/><br/><br/>
+	 <div class="row" id="prodList">
+		 <div class="container-fluid" id="prod">
+
+		</div> 
+	</div> 
+</body>
+</html>

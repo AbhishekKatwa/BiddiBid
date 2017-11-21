@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+	<script type="text/javascript">
+		username=localStorage.getItem("username");
+		function init(){
+			document.getElementById("userName").innerHTML=username;
+					getAllMyProducts();
+		}
+
+		function getAllMyProducts(){
+			gxhr=new XMLHttpRequest();
+			gxhr.onreadystatechange=fill;
+			gxhr.open("GET","getMyProducts.php?username="+username,true);
+			gxhr.send();
+		}
+		function fill(){
+			if(gxhr.readyState==4 && gxhr.status==200){
+				md=document.getElementById("MyProducts");
+				data=gxhr.responseText;
+				//alert(data);
+				data=data.split(":");
+				dh=(data.length-1);
+				//alert(dh);
+				x=document.getElementById("mytable");
+				x.innerHTML="";
+				thead=document.createElement("thead");
+				a1=document.createElement("th");
+				a2=document.createElement("th");
+				a3=document.createElement("th");
+				a1.innerHTML="Product";
+				a2.innerHTML="Max Price";
+				a3.innerHTML="Status";
+				thead.appendChild(a1);
+				thead.appendChild(a2);
+				thead.appendChild(a3);
+				x.appendChild(thead);
+				tbody=document.createElement("tbody");
+				for(i=0;i<dh;i++){
+					x1=document.createElement("tr");
+					y1=document.createElement("td");
+					y2=document.createElement("td");
+					y3=document.createElement("td");
+					datah=data[i].split(",");
+					y1.innerHTML=datah[0];
+					y2.innerHTML=parseInt(datah[1]);
+					y3.innerHTML="Pending";
+					x1.appendChild(y1);
+					x1.appendChild(y2);
+					x1.appendChild(y3);
+					tbody.appendChild(x1);
+
+				}
+				x.appendChild(tbody);
+				setTimeout(getAllMyProducts,5000);
+			}
+		}
+		function myPage(){
+			localStorage.setItem("username",username);
+			window.location="AddProduct.html";
+		}
+		function home()
+			{
+				localStorage.setItem("username",username);
+				window.location="first.html";
+			}
+	</script>
+</head>
+<body style="background-color:silver" onload="init()">
+		<div class="page-header">
+		<div class="jumbotron container container-fluid" style="background-color:lightblue;">
+			<div class="col-sm-1">
+				<br/><br/><br/><br/>
+					<button type="button" class="btn btn-success btn-md" onclick="myPage()"> 
+  							<span class="glyphicon glyphicon-default">Add product</span>
+						</button>
+			</div>
+			<!-- <div class="col-sm-10"> -->
+				<div class="col-sm-9">
+					<center style="font-size:25px;font-family:fantasy;font-weight:900"><b>BIDDY BID</b></center><br/>
+					<small><i><b></b></i></small>
+				</div>
+				<div class="col-sm-2">
+					
+					<button type="button" class="btn btn-md" disabled="disabled"> 
+  							<span class="glyphicon glyphicon-default"></span> Welcome <span id="userName"></span>
+						</button>
+				<br/><br/><br/>
+			
+				<button type="button" class="btn btn-info btn-md" onclick="home()"> 
+  							<span class="glyphicon glyphicon-primary"></span> GO TO HOME
+						</button>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid" >
+	<div class="row" id="prodLatest">
+		
+			<div class="col-sm-2"></div>
+			<div class="col-2m-8" id="MyProducts">
+					<div class="panel panel-info"> 
+							   <div class="panel-heading"> 
+							      <h3 class="panel-title">Products I hosted</h3> 
+							   </div> 
+							   <div class="panel-body"> 
+							      Products In Live Auction  
+							   </div>
+							    <table class="table table-hover table-striped table-bordered table-responsive" id="mytable">
+
+								      <!-- <th>Product</th><th>Price </th><th>Status</th>  -->
+								      <!-- <tr><td>Product A</td><td>200</td></tr> 
+								      <tr><td>Product B</td><td>400</td></tr>  -->
+   								</table> 
+					</div>
+			</div>
+			<div class="col-sm-2"></div>
+			
+		</div>
+	</div>
+</body>
+</html>

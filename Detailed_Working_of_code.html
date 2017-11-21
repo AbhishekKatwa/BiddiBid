@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+	<title>How this works</title>
+</head>
+<body>
+	<div class="container">
+	<hr>
+	<hr>
+		<div class="row">
+			<div class="col-sm-4">
+				At first the Login Page is shown..
+			</div>
+			<div class="col-sm-4">
+			<b>"XHR AJAX"</b>
+			Features:Login<br/>
+					Can able to resister with new names
+			</div>
+			<div class="col-sm-4">
+
+			Files that are used are,<br/>
+			index.html<br/>
+			LoginCheck.php (for logging in)<br/>
+			Register.php (for registering)<br/>
+			users.json (for storing the new users and also to verify the username and password during login)<br/>
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col-sm-2">
+			after logging in the Home page named first.html is lodded.<br/>
+			here the user can see the products put by other users bcz there is no point showing my products in the bidding page as i am not interested in bidding the products hosted by me</br/>
+			</div>
+			<div class="col-sm-6">
+			Features:the product name is popped when i hover on the image
+			<br/>the time gets decreased every second from each of the product and it is shown...Php file useed is GetProducts.php
+			<br/>In GetProducts.php file i am reading contents from details.json file and keeping all required data in a strng and returing the string to client..
+			the required data in the sense,products hosted by others..not me....i can know myname through username which i am storing at starting of all page.
+			<br/>here i first fetch all the products hosted by other users and then keep it in the page....i am not going and querying for any new additions....and the timing i am handling it in the client side javascript itself.
+			After having all products.....i should also kow if there are any new additions ....if any that product should be showed on top..
+			<br/>technique i have used is, <b>COMET...</b>
+			<br/> i only open a connection with the help of EventSource Object and if there are any additons that are automatically pushed by the server itself...server here is ServerPush.php ....serverPush will be keep watching the file called InfoPage.txt   any new addition are also logged in the InfoPage.txt....server will know about new additions through the log in the InfoPage.txt
+			<br/>
+			<br/>
+			In COMET ...
+			<br/>once all products are loaded.i will call monitor()
+			which will do the connection trough EventSourceObject and then the servers responses will be taken and 
+			<br/>will Call AddLatest() -> getItem(username,prodname)
+			-> AddedNew_SSE.php (which will give me the item that is reuested)(here latest) ->addedNow() -> the product will be
+			<br/>Added as Latest Producst on the top of all other products.
+			<br/><br/><br/>
+			Search button is provided where i have used technique <b>"SUBMISSION TROTTLE".</b>
+
+			As user types something n the search box it will call Suggest() -> form where it will show the resposes in the div below the search box...whcih will call <b>"getNeeded.php"</b>
+			<br/><br/><br/>
+			</div>
+			<div class="col-sm-3">
+				Used here are<br/>
+				first.html
+				<br/>details.json (all product data is stored in this file as follows....foreach username{all the products he hosted})
+				<br/>getDetails.php (which will get the data from details.json)
+				<br/>onclick of the image it will call ProductPage.html
+				before going to that page it will store username,imagename and product name in localstorage
+				<hr>
+				Function Calls are as follows..<br/>
+				onload of first.html => obj.call()
+				<br/>From obj.call -> xhr request to getProducts.php
+				After Fetching all Products details -> obj.Popolate()
+				<br/>From there Setting Interval for the Timer -> setInterval(Interval,1000);
+				<br/>Onclick fun(event) and then to -> GoToProd(temp,prodname) is called.
+				<br/>
+			</div>
+
+		</div>
+		<div class="row">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-6">
+				there are also button called MyAccount which will take me to my page where it will show all my products 
+				Once i click on myPage.html i will call MyPage()
+				<br/> here i am storing my name(username) in the localstorage and the calling window.location="MyPage.html";
+			</div>
+			<div class="col-sm-4"></div>
+		</div>
+
+		<hr>
+		<div class="row">
+			<div class="col-sm-2">
+				MyPage.html:Here will show all my products and details about their status along with the macximum bid price.
+				Technique used <b>"PERIODIC REFRESH"</b>
+			</div>
+			<div class="col-sm-6">
+				onload => init() ->getAllMyProducts {getMyProduts.php}
+				<br/>-> fill()  (fill in a table all the products that are come back)
+				Feature:The call is make every 5 seconds to check if there are anyupdates..
+				if any they are reflected.
+				(like if anybody bids to my products they will be shown without having to refresh page).
+				Feature:Add Products button -> onclick of this button -> it will call myPage() whre it will store username in localstorage and call window.location="AddProducts.html"
+				<br/>
+			</div>
+		</div>
+		<hr>
+		<hr>
+		<div class="row">
+			<div class="col-sm-4">Onclick of any image it will take us to that page ProductPage.html
+			<br/>Technique used:<b>MULTISTAGE DOWNLOAD</b>
+			</div>
+			<div class="col-sm-4">
+				body.oload()->init()
+				<br/>After 1 second getDetails() is called
+				<br/>First Load the details of that producst by calling getDetails
+				<br/>After 3 second i will call nextLoad where i will set src of the imgage
+				<br/>then after 2 seconds call Bidding where i am letting the user to see the bidding option making visible the text box and bid button
+				<br/>Once there is a Bid option user can bid on that product it will call <b>"Increase.php"</b>which will make chages to maxbid attribute in the details.json file. which are reflected in all clients including the user.
+				<br/>Also using<b>Periodic refresh</b> so that in this page it should reflect if some other user bids on this product.
+			</div>
+		</div>
+		<hr>
+		<hr>
+		<div class="row">
+			<div class="col-sm-8">
+				Add My Product
+				<br/>Used <b>RESTful API</b>
+				<br/>user enters his product details in Form and then choose the file to upload.and then he on click of Upload button the create() function is fired and from there along with all the form data and image name it will go to <b>"AddToJson.php"</b> form where the Rest uri is called and then <b>"WS/Add.php"</b>is executed and then it will make changes in
+				<br/>details.json file
+				<br/>InfoPaage.txt(to let the clients know new products is added and the product name of newly added product)
+				<br/>and after this the image Upload takes place the image is uplaoded to <b>"/images/"</b>folder for this to happen it will call <b>"AddtoJson1.php"</b>
+
+			</div>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>

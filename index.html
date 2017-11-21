@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>LoginPage</title>
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+	<script type="text/javascript">
+		function call(){
+			name=document.getElementById("name").value;
+			pwd=document.getElementById("pwd").value;
+			xhrl=new XMLHttpRequest();
+			xhrl.onreadystatechange=check;
+			xhrl.open("GET","LoginCheck.php?name="+name+"&pwd="+pwd,false);
+			xhrl.send();
+		}
+		function check(){
+			if(xhrl.readyState==4 && xhrl.status==200){
+			res=xhrl.responseText;
+			//alert(res);
+			if(res=="success"){
+				localStorage.removeItem("username")
+			localStorage.setItem("username",name);
+			window.location="first.html";
+			}
+			else{
+				document.writeln("Invalid Credentials");
+				window.location="Login.html";
+			}
+		}
+		}
+
+		function register(){
+			rname=document.getElementById("rname").value;
+			rpwd=document.getElementById("rpwd").value;
+			rppwd=document.getElementById("rppwd").value;
+			if(rppwd===rpwd)
+			{
+				xhrt=new XMLHttpRequest();
+				xhrt.onreadystatechange=Status;
+				xhrt.open("GET","Register.php?name="+rname+"&pwd="+rpwd,false);
+				xhrt.send();
+			}
+			else{
+				alert("Password Doesn't match");
+			}
+		}
+		function Status(){
+			if(xhrt.readyState==4 && xhrt.status==200){
+				res=xhrt.responseText;
+				if(res=="success"){
+					alert(name);
+				localStorage.removeItem("username")
+				localStorage.setItem("username",name);
+				window.location="first.html";
+			}
+			else{
+				document.writeln("Invalid Credentials");
+				window.location="Login.html";
+			}
+			}
+		}
+		function call2(){
+			//alert("hel");
+			window.location="localhost:82/Contact";
+		}
+	</script>
+</head>
+<body>
+<br/>
+<div class="row">
+<div class="container">
+<div class="col-lg-12">
+	<form class="form-group" role="form">
+	     <input type="button" class="btn btn-info" id="Contact" value="Contact" onclick="call2()" style="float: right;">
+	</form>
+</div>
+<br/><br/>
+<div class="col-lg-2"></div>
+<div class="col-lg-8">
+<form class="bs-example bs-example-form" role="form"> 
+	<div class="input-group"> 
+         <span class="input-group-addon" style="">Name </span> 
+         <input type="text" class="form-control" id="name" placeholder="User Name"> 
+         <span class="input-group-addon" style=""></span>
+     </div><br/>
+     <div class="input-group"> 
+         <span class="input-group-addon">Password</span> 
+         <input type="text" class="form-control" id="pwd" placeholder="Password"> 
+         <span class="input-group-addon"></span>
+     </div><br/>
+     <input type="button" class="btn btn-danger" id="Login" value="Login" onclick="call()">
+
+     
+</form>
+</div>
+<div class="col-lg-2"></div>
+</div>
+</div>
+
+<br/><br/><br/><br/><br/>
+<div class="container">
+	<div class="row">
+			<div class="col-lg-12">
+			<span style="color:red;letter-spacing: 20;">REGISTER</span>
+			</div>
+	</div>
+	<div class="row">
+			<div class="col-lg-2"></div>
+			<div class="col-lg-8">
+				<form class="bs-example bs-example-form" role="form">
+					<div class="input-group"> 
+				         <span class="input-group-addon" style="">Name </span> 
+				         <input type="text" class="form-control" id="rname" placeholder="User Name"> 
+				         <span class="input-group-addon" style=""></span>
+				    </div><br/>
+				    <div class="input-group"> 
+				         <span class="input-group-addon" style="">Name </span> 
+				         <input type="password" class="form-control" id="rpwd" placeholder="Set your account password">
+				    </div><br/>
+				    <div class="input-group"> 
+				         <span class="input-group-addon" style="">Name </span> 
+				         <input type="password" class="form-control" id="rppwd" placeholder="ReEnter password">
+				    </div><br/>
+				    <input type="button" class="btn btn-primary" id="Register" value="Register" onclick="register()">
+				</form>
+			</div>
+			<div class="col-lg-2"></div>
+	</div>
+</div>
+<!-- <input type="text" id="name">
+<input type="text" id="pwd">
+<input type="button" id="Login" onclick="call()">
+ --></body>
+</html>

@@ -1,0 +1,9 @@
+div.suggest{
+	color:red;
+	background-color:yellow;
+}
+div.suggest:hover{
+	color:yellow;
+	background-color:red;
+	cursor:pointer;
+}
